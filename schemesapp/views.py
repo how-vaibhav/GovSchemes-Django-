@@ -79,7 +79,6 @@ def register(request):
             form.save()
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
-            passkey = form.cleaned_data.get('passkey')
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
