@@ -1,5 +1,5 @@
 body {
-      background: linear-gradient(to right, #11a7ec, #09ec19);
+      background: linear-gradient(to right,#1b263b, #1b263b);
     }
 
     .section-container {
@@ -15,7 +15,7 @@ body {
     .section-container:hover {
       transform: scale(1.01);
     }
-
+#vision{color:brown;}
     .vision-text {
       font-size: 1.5rem;
       line-height: 1.8;
