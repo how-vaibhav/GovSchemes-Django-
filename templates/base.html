@@ -52,6 +52,22 @@
         }, 4000);
         localStorage.removeItem("justLoggedOut");
       }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const button = document.getElementById("notification-button");
+        const dropdown = document.getElementById("notification-dropdown");
+
+        button.addEventListener("click", () => {
+          dropdown.classList.toggle("hidden");
+        });
+
+        // Optional: Hide when clicking outside
+        document.addEventListener("click", function (e) {
+          if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add("hidden");
+          }
+        });
+      });
     </script>
 
     <div class="back">
@@ -59,41 +75,68 @@
         <h1>Sikkim Government</h1>
       </header>
 
-      <div class="profile-container">
-        <input type="checkbox" id="profile-toggle" />
-        <label for="profile-toggle">
-          <img
-            src="https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg"
-            alt="Profile"
-            class="profile-pic"
-          />
-        </label>
-        <div class="dropdown-menu">
-          {% if user.is_authenticated %}
-          <p>
-            <i class="fas fa-user-circle"></i>
-            {{user.get_full_name|default:user.username }}
-          </p>
-          <a
-            href="{% url 'logout' %}"
-            onclick="localStorage.setItem('justLoggedOut', 'true')"
-            ><i class="fas fa-sign-out-alt"></i> Logout</a
-          >
-          {% else %}
-          <p><i class="fas fa-user"></i> Guest</p>
-          <a
-            href="{% url 'login' %}"
-            onclick="localStorage.setItem('justLoggedIn', 'true')"
-            ><i class="fas fa-sign-in-alt"></i> Login</a
-          >
-          <a href="{% url 'register' %}"
-            ><i class="fas fa-user-plus"></i> Sign Up</a
-          >
-          {% endif %} {% if user.is_superuser %}
-          <a href="{% url 'add_employee' %}"
-            ><i class="fas fa-user-shield"></i> Authenticate</a
-          >
-          {% endif %}
+      <div class="top-container">
+        <div class="profile-container">
+          <input type="checkbox" id="profile-toggle" />
+          <label for="profile-toggle">
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg"
+              alt="Profile"
+              class="profile-pic"
+            />
+          </label>
+          <div class="dropdown-menu">
+            {% if user.is_authenticated %}
+            <p>
+              <i class="fas fa-user-circle"></i>
+              {{user.get_full_name|default:user.username }}
+            </p>
+            <a
+              href="{% url 'logout' %}"
+              onclick="localStorage.setItem('justLoggedOut', 'true')"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
+            {% else %}
+            <p><i class="fas fa-user"></i> Guest</p>
+            <a
+              href="{% url 'login' %}"
+              onclick="localStorage.setItem('justLoggedIn', 'true')"
+              ><i class="fas fa-sign-in-alt"></i> Login</a
+            >
+            <a href="{% url 'register' %}"
+              ><i class="fas fa-user-plus"></i> Sign Up</a
+            >
+            {% endif %} {% if user.is_superuser %}
+            <a href="{% url 'add_employee' %}"
+              ><i class="fas fa-user-shield"></i> Authenticate</a
+            >
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="notification-container">
+          <button id="notification-button" class="notification-btn">
+            <i class="fas fa-bell"></i>
+            {% if notifications|length > 0 %}
+            <span class="dot"></span>
+            {% endif %}
+          </button>
+
+          <div id="notification-dropdown" class="hidden">
+            {% if notifications %}
+            <ul>
+              {% for notification in notifications %}
+              <li>
+                {{ notification.message }} {% if notification.link %}
+                <a href="{{ notification.link }}">View</a>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p>No new notifications</p>
+            {% endif %}
+          </div>
         </div>
       </div>
 

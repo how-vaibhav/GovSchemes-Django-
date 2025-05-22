@@ -88,7 +88,6 @@
       }
 
       .profile-container {
-        position: absolute;
         top: 1rem;
         right: 2rem;
       }
@@ -237,3 +236,74 @@
     .footer h5 {
       margin-bottom: 20px;
     }
+
+    .notification-container {
+    display: inline-block;
+    margin: 10px;
+  }
+
+  #notification-dropdown {
+    position: absolute;
+    right: 0;
+    top: 70px;
+    background-color: white;
+    border: 1px solid #ccc;
+    width: 250px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 9999;
+  }
+
+  #notification-dropdown ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  #notification-dropdown li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  #notification-dropdown p {
+    padding: 10px;
+    color: #555;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .notification-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    color: white; /* White bell */
+    font-size: 24px;
+  }
+
+  .notification-btn .dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    height: 10px;
+    width: 10px;
+    background-color: white;
+    border-radius: 50%;
+  }
+
+  .notification-btn:hover {
+    opacity: 0.8;
+  }
+
+  .top-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px; /* space between bell and profile */
+    margin-right: 2rem;
+    position: absolute;
+    top: 20px;
+    right: 0;
+    z-index: 1000;
+  }

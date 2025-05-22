@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import FeedbackForm, AddEmployee
-from .models import Feedback
+from .models import Feedback, Notification
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
@@ -11,7 +11,13 @@ from django.conf import settings
 # Create your views here.
 
 def home(request):
-    return render(request, 'home.html')
+    notifications = []
+
+    if request.user.is_authenticated:
+        notifications = Notification.objects.filter(user=request.user, is_read=False).order_by('-created_at')
+        print("User:", request.user)
+        print("Notifications:", notifications)
+    return render(request, 'home.html', {'notifications': notifications})
 
 @login_required
 def feedback(request):
@@ -126,6 +132,13 @@ def reply_feedback(request, feedback_id):
         reply = request.POST.get('reply')
         feedback.reply = reply
         feedback.save()
+    
+        Notification.objects.create(
+            user=feedback.user,
+            message=f"Your feedback on {feedback.scheme} has been replied to.",
+            link=f"/viewfeedbacks/#{feedback.id}"
+        )
+
         return redirect('view_feedbacks')
     return render(request, 'feedback/reply_feedback.html', {'feedback': feedback})
 
