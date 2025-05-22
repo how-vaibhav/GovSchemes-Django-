@@ -1,0 +1,65 @@
+{% load static %}
+{% load group_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Government Schemes Portal</title>
+  <link rel="icon" href="{% static 'images/favicon.ico' %}">
+
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-/M0dXYocydC5mMEQ6ga8j83pRm4sf90uZsLMFXNRGO3NzAOpUc1l9rFBI1kqS14CWw3yfUmeygcXKXL+2mE0hQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href='{% static 'css/style.css' %}'>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+  <div class='back'>
+    <header>
+      <h1>Government Schemes</h1>
+    </header>
+
+    <div class="profile-container">
+      <input type="checkbox" id="profile-toggle" />
+      <label for="profile-toggle">
+        <img src="https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg" alt="Profile" class="profile-pic" />
+      </label>
+      <div class="dropdown-menu">
+        {% if user.is_authenticated %}
+        <p><i class="fas fa-user-circle"></i> {{ user.get_full_name|default:user.username }}</p>
+        {% else %}
+        <p><i class="fas fa-user"></i> Guest</p>
+        {% endif %}
+
+        {% if user.is_superuser %}
+        <a href="/addemployee/"><i class="fas fa-user-shield"></i> Authenticate</a>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <a href="/logout/"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        {% else %}
+        <a href="/login/"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a href="/register/"><i class="fas fa-user-plus"></i> Sign Up</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <nav>
+      <a href="{% url 'home' %}">Home</a>
+      <a href="#">Schemes</a>
+      {% if user|has_group:"Employee" %}
+        <a href="{% url 'view_feedbacks' %}">Feedbacks</a>
+      {% else %}
+        <a href="{% url 'feedback' %}">Feedback</a>
+      {% endif %}
+    </nav>
+  </div>
+
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,86 @@
+/* Full viewport background and center alignment */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #0b5f74;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Outer container for centering */
+.container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Form Box Styling */
+.form-container {
+    width: 100%;
+    padding: 30px 25px;
+    background-color: #ffffff;
+    border: 2px solid #0b5f74;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading */
+.form-container h2 {
+    color: #0b5f74;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+/* Input Fields */
+.form-container input[type="text"],
+.form-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #b0c4de;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-container input:focus,
+.form-container select:focus {
+    border-color: #0b5f74;
+    outline: none;
+}
+
+/* Placeholder */
+input::placeholder {
+    color: #999999;
+}
+
+/* Submit Button */
+.btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #0b5f74;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #084f61;
+}
+
+/* Button Container */
+.button-container {
+    margin-top: 20px;
+    text-align: center;
+}

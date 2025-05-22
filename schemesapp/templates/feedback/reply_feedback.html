@@ -1,0 +1,9 @@
+<h2>Reply to Feedback</h2>
+<p><strong>From:</strong> {{ feedback.user.username }}</p>
+<p><strong>Message:</strong> {{ feedback.message }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <textarea name="reply" rows="5" cols="50" required>{{ feedback.reply }}</textarea><br>
+    <button type="submit">Send Reply</button>
+</form>
