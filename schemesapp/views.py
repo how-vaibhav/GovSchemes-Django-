@@ -53,8 +53,8 @@ def view_feedback(request):
         feedbacks = Feedback.objects.filter(user=request.user).order_by("-submitted_at")
 
     # Filter by scheme if selected
-    if scheme_filter and scheme_filter in dict(Feedback.SCHEME_CHOICES).keys():
-        feedbacks = feedbacks.filter(scheme=scheme_filter)
+    if scheme_filter:
+        feedbacks = feedbacks.filter(scheme__name=scheme_filter)
 
     # Filter by replied or not
     if replied_filter == 'yes':
@@ -63,10 +63,14 @@ def view_feedback(request):
         feedbacks = feedbacks.filter(reply__isnull=True) | feedbacks.filter(reply='')
 
     # Pass scheme choices to template for dropdown
-    scheme_choices = Feedback.SCHEME_CHOICES
+    scheme_choices = [(name, name) for name in Scheme.objects.values_list('name', flat=True)]
+
+    total_feedbacks = feedbacks.count()
+    total_replied = feedbacks.exclude(reply__isnull=True).exclude(reply__exact='').count()
+    total_unreplied = feedbacks.filter(reply__isnull=True) | feedbacks.filter(reply='')
 
 
-    return render(request, 'feedback/viewfeedback.html',{'feedbacks': feedbacks, 'scheme_choices': scheme_choices, 'selected_scheme': scheme_filter, 'selected_replied': replied_filter,})
+    return render(request, 'feedback/viewfeedback.html',{'feedbacks': feedbacks, 'scheme_choices': scheme_choices, 'selected_scheme': scheme_filter, 'selected_replied': replied_filter, 'total_feedbacks':total_feedbacks, 'total_replied':total_replied, 'total_unreplied':total_unreplied,})
 
 def login_view(request):
     if request.method == 'POST':
