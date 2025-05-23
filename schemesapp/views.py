@@ -10,6 +10,8 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.conf import settings
 import json, requests
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # Create your views here.
 
 def home(request):
@@ -67,7 +69,8 @@ def view_feedback(request):
 
     total_feedbacks = feedbacks.count()
     total_replied = feedbacks.exclude(reply__isnull=True).exclude(reply__exact='').count()
-    total_unreplied = feedbacks.filter(reply__isnull=True) | feedbacks.filter(reply='')
+    total_unreplied = (feedbacks.filter(reply__isnull=True) | feedbacks.filter(reply='')).count()
+
 
 
     return render(request, 'feedback/viewfeedback.html',{'feedbacks': feedbacks, 'scheme_choices': scheme_choices, 'selected_scheme': scheme_filter, 'selected_replied': replied_filter, 'total_feedbacks':total_feedbacks, 'total_replied':total_replied, 'total_unreplied':total_unreplied,})
@@ -205,7 +208,7 @@ def scheme_input(request):
         if form.is_valid():
             scheme = form.save()
             messages.success(request, "Feedback Added.")
-            return redirect('schemes_view')
+            return redirect('scheme_list')
     else:
         form = Add_Scheme_Form()    
     return render(request, 'schemesapp/add_scheme.html', {'form': form})
@@ -237,19 +240,7 @@ def scheme_eligibility(request, pk):
     
     scheme = get_object_or_404(Scheme, pk=pk)
 
-    checks = {
-        'min_age': lambda: details.age >= scheme.min_age if scheme.min_age is not None else True,
-        'max_income': lambda: details.income <= scheme.income if scheme.income is not None else True,
-        'gender': lambda: details.gender.lower() == scheme.gender.lower() if scheme.gender else True,
-        'caste': lambda: details.caste == scheme.cast_reequired if scheme.caste is not None else True,
-        'disability': lambda: details.disability == scheme.disability if scheme.disability is not None else True,
-        'marital_status': lambda: details.maritial_status == scheme.maritial_status if scheme.maritial_status is not None else True,
-        'location': lambda: details.location == scheme.location if scheme.location is not None else True,
-        'minority': lambda: details.minority == scheme.minority if scheme.minority is not None else True,
-        'location': lambda: details.below_poverty_line == scheme.below_poverty_line if scheme.below_poverty_line is not None else True, 
-    }
-
-    is_eligible = all(check() for check in checks.values())
+    is_eligible = scheme.is_user_eligible(details)
 
     return render(request, 'eligibility.html', {'details': details, 'scheme':scheme, 'is_eligible':is_eligible})
 
@@ -262,20 +253,9 @@ def check_all_eligibility(request):
 
     eligible_schemes = []
 
-    for scheme in Scheme.objects.all():
-        checks = [
-            details.age >= scheme.min_age if scheme.min_age is not None else True,
-            details.income <= scheme.income if scheme.income is not None else True,
-            details.gender.lower() == scheme.gender.lower() if scheme.gender is not None else True,
-            details.caste == scheme.caste if scheme.caste is not None else True,
-            details.disability == scheme.disability if scheme.disability is not None else True,
-            details.maritial_status == scheme.maritial_status if scheme.maritial_status is not None else True,
-            details.location == scheme.location if scheme.location is not None else True,
-            details.minority == scheme.minority if scheme.minority is not None else True,
-            details.below_poverty_line == scheme.below_poverty_line if scheme.below_poverty_line is not None else True,
-        ]
-
-        if all(checks):
+    all_schemes = Scheme.objects.all()
+    for scheme in all_schemes:
+        if scheme.is_user_eligible(details):
             eligible_schemes.append(scheme)
 
     return render(request, 'eligible_schemes.html', {
@@ -307,3 +287,19 @@ def edit_user_details(request):
     else:
         form = User_Details_Form(instance=details)
     return render(request, 'edit_user_details.html', {'form': form})
+
+@receiver(post_save, sender=Scheme)
+def notify_users_on_new_scheme(sender, instance, created, **kwargs):
+    if created:
+        scheme = instance
+
+        for user_detail in UserDetails.objects.all():
+            eligible = scheme.is_user_eligible(user_detail)
+            message = f"New scheme '{scheme.name}' added. You are {'eligible' if eligible else 'not eligible'}."
+
+            Notification.objects.create(
+                user=user_detail.user,  # Assuming UserDetails links to User
+                message=message,
+                scheme=scheme,
+                is_read=False,
+            )
