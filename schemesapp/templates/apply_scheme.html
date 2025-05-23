@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Apply for Scheme</title>
+    <link rel="stylesheet" href="{% static 'css/eligibility.css' %}">
+</head>
+<body>
+  <div class="container">
+    <h2>Apply for Scheme</h2>
+
+    <form method="post" action="{% url 'apply_scheme' %}">
+        {% csrf_token %}
+        
+        <label for="scheme">Select Scheme:</label>
+        <select name="scheme" id="scheme" required>
+            {% for scheme in schemes %}
+                <option value="{{ scheme.id }}">{{ scheme.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="aadhaar">Aadhaar Number:</label>
+        <input type="text" name="aadhaar" id="aadhaar" maxlength="12" pattern="\d{12}" required>
+        <button type="submit">Apply</button>
+    </form>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <a href="{% url 'scheme_list' %}">Back to Schemes</a>
+  </div>
+</body>
+</html>

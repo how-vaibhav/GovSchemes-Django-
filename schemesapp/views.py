@@ -12,6 +12,7 @@ from django.conf import settings
 import json, requests
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from bs4 import BeautifulSoup
 # Create your views here.
 
 def home(request):
@@ -303,3 +304,120 @@ def notify_users_on_new_scheme(sender, instance, created, **kwargs):
                 scheme=scheme,
                 is_read=False,
             )
+
+def scrape_schemes_view(request):
+    quotes_list = []
+
+    if request.method == 'POST':
+        url = "http://quotes.toscrape.com/"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            quotes = soup.find_all('div', class_='quote')
+
+            for q in quotes:
+                text = q.find('span', class_='text').get_text(strip=True)
+                author = q.find('small', class_='author').get_text(strip=True)
+                
+                # If you want to store in DB using Scheme model, adapt fields:
+                scheme, created = Scheme.objects.update_or_create(
+                    name=author,  # Using author as name (just for example)
+                    defaults={
+                        'objective': text,  # Using quote text as objective
+                        'benefits': '',  # Empty or adapt as needed
+                    #  'implementing_agency': '',  # Empty or adapt
+                    }
+                )
+                quotes_list.append({'author': author, 'quote': text})
+
+    return render(request, 'scrape.html', {'quotes': quotes_list})
+
+
+def scrape_page(request):
+    return render(request, 'scrape.html', {'quotes': None})
+
+def verhoeff_check(num):
+    # Multiplication table d
+    d = [
+        [0,1,2,3,4,5,6,7,8,9],
+        [1,2,3,4,0,6,7,8,9,5],
+        [2,3,4,0,1,7,8,9,5,6],
+        [3,4,0,1,2,8,9,5,6,7],
+        [4,0,1,2,3,9,5,6,7,8],
+        [5,9,8,7,6,0,4,3,2,1],
+        [6,5,9,8,7,1,0,4,3,2],
+        [7,6,5,9,8,2,1,0,4,3],
+        [8,7,6,5,9,3,2,1,0,4],
+        [9,8,7,6,5,4,3,2,1,0]
+    ]
+
+    # Permutation table p
+    p = [
+        [0,1,2,3,4,5,6,7,8,9],
+        [1,5,7,6,2,8,3,0,9,4],
+        [5,8,0,3,7,9,6,1,4,2],
+        [8,9,1,6,0,4,3,5,2,7],
+        [9,4,5,3,1,2,6,8,7,0],
+        [4,2,8,6,5,7,3,9,0,1],
+        [2,7,9,3,8,0,6,4,1,5],
+        [7,0,4,6,9,1,3,2,5,8]
+    ]
+
+    # Inverse table inv
+    inv = [0,4,3,2,1,5,6,7,8,9]
+
+    c = 0
+    # Reverse the number string
+    num = num[::-1]
+    for i, digit in enumerate(num):
+        c = d[c][p[i % 8][int(digit)]]
+
+    return c == 0
+
+
+def apply_scheme(request):
+    schemes = Scheme.objects.all()
+
+    if request.method == 'POST':
+        aadhaar = request.POST.get('aadhaar')
+        scheme_id = request.POST.get('scheme')
+
+        if not verhoeff_check(aadhaar):
+            messages.error(request, "Invalid Aadhaar number.")
+            return render(request, 'apply_scheme.html', {'schemes': schemes})
+
+        if not scheme_id:
+            messages.error(request, "Please select a scheme.")
+            return render(request, 'apply_scheme.html', {'schemes': schemes})
+
+        try:
+            scheme = Scheme.objects.get(id=scheme_id)
+        except Scheme.DoesNotExist:
+            messages.error(request, "Selected scheme does not exist.")
+            return render(request, 'apply_scheme.html', {'schemes': schemes})
+
+        masked_aadhaar = '********' + aadhaar[-4:]
+
+        # Save info in session or pass as query parameters if needed
+        request.session['masked_aadhaar'] = masked_aadhaar
+        request.session['scheme_name'] = scheme.name
+
+        # Redirect to success page URL
+        return redirect('apply_success')
+
+    return render(request, 'apply_scheme.html', {'schemes': schemes})
+
+
+def apply_success(request):
+    masked_aadhaar = request.session.get('masked_aadhaar')
+    scheme_name = request.session.get('scheme_name')
+
+    if not masked_aadhaar or not scheme_name:
+        # Redirect back if no session data
+        return redirect('apply_scheme')
+
+    return render(request, 'success.html', {
+        'aadhaar': masked_aadhaar,
+        'scheme_name': scheme_name,
+    })

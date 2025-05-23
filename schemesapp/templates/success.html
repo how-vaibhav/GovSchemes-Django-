@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Application Success</title>
+</head>
+<body>
+    <h2>Application Submitted Successfully</h2>
+    <p>Your Aadhaar number: {{ aadhaar }}</p>
+    <p>Applied Scheme: {{ scheme_name }}</p>
+    <a href="{% url 'apply_scheme' %}">Apply for another scheme</a>
+</body>
+</html>

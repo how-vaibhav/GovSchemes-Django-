@@ -19,5 +19,9 @@ urlpatterns = [
       path('check-eligibility/', views.check_all_eligibility, name='check_all_eligibility'),
       path('userdetails/view/', views.view_user_details, name='view_user_details'),
       path('userdetails/edit/', views.edit_user_details, name='edit_user_details'),
+      path('scrape/', views.scrape_page, name='scrape_page'),
+      path('scrape/run/', views.scrape_schemes_view, name='scrape_schemes'),  # scrape action
+      path('apply/', views.apply_scheme, name='apply_scheme'),
+      path('apply/success/', views.apply_success, name='apply_success'),
 ]
 
