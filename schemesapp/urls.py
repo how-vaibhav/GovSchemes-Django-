@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-     path('home/', views.home, name = "home"),
+      path('home/', views.home, name = "home"),
       path('feedback/', views.feedback, name = "feedback"),
       path('feedbacks/', views.view_feedback, name = "view_feedbacks"),
       path('login/', views.login_view, name = "login"),
@@ -23,5 +23,8 @@ urlpatterns = [
       path('scrape/run/', views.scrape_schemes_view, name='scrape_schemes'),  # scrape action
       path('apply/', views.apply_scheme, name='apply_scheme'),
       path('apply/success/', views.apply_success, name='apply_success'),
+      path('applications/', views.applications_view, name='all_applications'),
+      path('applications/<int:app_id>/accept/', views.accept_application, name='accept_application'),
+      path('applications/<int:app_id>/reject/', views.reject_application, name='reject_application'),
 ]
 

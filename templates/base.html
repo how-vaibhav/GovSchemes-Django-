@@ -140,7 +140,10 @@
           ><i class="fas fa-comments"></i> Feedbacks</a
         >
         <a href="{% url 'add_scheme' %}"
-          ><i class="fas fa-add"></i> Add Feedbacks</a
+          ><i class="fas fa-add"></i> Add Scheme</a
+        >
+        <a href="{% url 'all_applications' %}"
+          ><i class="fas fa-check"></i>Approve Application</a
         >
         {% else %}
         <a href="{% url 'feedback' %}"

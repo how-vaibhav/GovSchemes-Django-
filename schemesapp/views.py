@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
 from .forms import FeedbackForm, AddEmployee, Add_Scheme_Form, User_Details_Form
-from .models import Feedback, Notification, Scheme, UserDetails
+from .models import Feedback, Notification, Scheme, UserDetails, Application
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
@@ -13,6 +14,7 @@ import json, requests
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from bs4 import BeautifulSoup
+from django.views.decorators.http import require_POST
 # Create your views here.
 
 def home(request):
@@ -207,11 +209,13 @@ def scheme_detail(request, pk):
 @login_required
 @user_passes_test(is_employee)
 def scheme_input(request):
+    storage = messages.get_messages(request)
+    storage.used = True  # Clears all messages
     if request.method == 'POST':
         form = Add_Scheme_Form(request.POST)
         if form.is_valid():
             scheme = form.save()
-            messages.success(request, "Feedback Added.")
+            messages.success(request, "Schemes Added.")
             return redirect('scheme_list')
     else:
         form = Add_Scheme_Form()    
@@ -378,8 +382,14 @@ def verhoeff_check(num):
 
     return c == 0
 
-
+@login_required
 def apply_scheme(request):
+
+    try:
+        details = UserDetails.objects.get(user=request.user)
+    except UserDetails.DoesNotExist:
+        return redirect('user_detail') 
+    
     schemes = Scheme.objects.all()
 
     if request.method == 'POST':
@@ -400,18 +410,20 @@ def apply_scheme(request):
             messages.error(request, "Selected scheme does not exist.")
             return render(request, 'apply_scheme.html', {'schemes': schemes})
 
-        masked_aadhaar = '********' + aadhaar[-4:]
+        application = Application(user=request.user, scheme=scheme)
+        application.sensitive_data = aadhaar
+        application.save()
 
-        # Save info in session or pass as query parameters if needed
+        masked_aadhaar = '********' + aadhaar[-4:]
         request.session['masked_aadhaar'] = masked_aadhaar
         request.session['scheme_name'] = scheme.name
+        request.session['user_name'] = request.user.username
 
-        # Redirect to success page URL
         return redirect('apply_success')
 
     return render(request, 'apply_scheme.html', {'schemes': schemes})
 
-
+@login_required
 def apply_success(request):
     masked_aadhaar = request.session.get('masked_aadhaar')
     scheme_name = request.session.get('scheme_name')
@@ -424,3 +436,64 @@ def apply_success(request):
         'aadhaar': masked_aadhaar,
         'scheme_name': scheme_name,
     })
+
+@login_required
+@user_passes_test(is_employee)
+def applications_view(request):
+    status_filter = request.GET.get('status', 'all')
+
+    if status_filter == 'pending':
+        applications = Application.objects.filter(status='pending')
+    elif status_filter == 'accepted':
+        applications = Application.objects.filter(status='accepted')
+    elif status_filter == 'rejected':
+        applications = Application.objects.filter(status='rejected')
+    else:
+        applications = Application.objects.all()
+
+    context = {
+        'applications': applications,
+        'current_filter': status_filter,
+        'total_count': Application.objects.count(),
+        'pending_count': Application.objects.filter(status='pending').count(),
+        'accepted_count': Application.objects.filter(status='accepted').count(),
+        'rejected_count': Application.objects.filter(status='rejected').count(),
+    }
+    return render(request, 'view_applications.html', context)
+
+@login_required
+@user_passes_test(is_employee)
+@require_POST
+def accept_application(request, app_id):
+    application = get_object_or_404(Application, id=app_id)
+    application.status = 'accepted'
+    application.save()
+
+    Notification.objects.create(
+        user=application.user,
+        scheme=application.scheme,
+        message=f"Your application for '{application.scheme.name}' has been accepted.",
+        is_read=False,
+    )
+    
+    messages.success(request, 'Application accepted and user notified.')
+    return redirect('all_applications')
+
+
+@login_required
+@user_passes_test(is_employee)
+@require_POST
+def reject_application(request, app_id):
+    application = get_object_or_404(Application, id=app_id)
+    application.status = 'rejected'
+    application.save()
+
+    Notification.objects.create(
+        user=application.user,
+        scheme=application.scheme,
+        message=f"Your application for '{application.scheme.name}' has been rejected.",
+        is_read=False,
+    )
+
+    messages.error(request, 'Application rejected and user notified.')
+    return redirect('all_applications')

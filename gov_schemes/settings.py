@@ -12,15 +12,37 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 
+
+from decouple import config
+
+from cryptography.fernet import Fernet
+import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+
+SECRET_KEY = config('SECRET_KEY')
+
+FIELD_ENCRYPTION_KEY = config('FIELD_ENCRYPTION_KEY').encode()
+FERNET = Fernet(FIELD_ENCRYPTION_KEY)
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR/'db.sqlite3'
+    }
+}
+
+
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q(n=&ob)emwqdl4zwikk1h#*njfaav&37_6@**i)p%bk$r+f8-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

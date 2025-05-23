@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class UserDetails(models.Model):
     GENDER_CHOICES = [
@@ -115,3 +116,30 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.user.username} - Read: {self.is_read}"
+
+class Application(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    scheme = models.ForeignKey(Scheme, on_delete=models.CASCADE, null=True)
+    _aadhaar =models.BinaryField(db_column='aadhaar_encrypted')
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    ]
+
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
+    @property
+    def sensitive_data(self):
+        if self._aadhaar:
+            return settings.FERNET.decrypt(self._aadhaar).decode()
+        return None
+    
+    @sensitive_data.setter
+    def sensitive_data(self, value):
+        if value is not None:
+            encrypted = settings.FERNET.encrypt(value.encode())
+            self._aadhaar = encrypted
+        else:
+            self._aadhaar = None
