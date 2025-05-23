@@ -55,7 +55,6 @@ class Scheme(models.Model):
     ]
 
     gender= models.CharField(max_length=50, choices=GENDER_CHOICES, blank=True, null=True)
-    date_of_birth = models.DateField(default=None, blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
     maritial_status = models.CharField(max_length=50, choices=GENDER_CHOICES, blank=True, null=True)
     location = models.CharField(max_length=100, choices=[('rural', "Rural"),('urban', "Urban")], blank=True, null=True)
@@ -65,6 +64,3 @@ class Scheme(models.Model):
     below_poverty_line = models.BooleanField(default=False, blank=True, null=True)
     income = models.PositiveIntegerField(blank=True, null=True)
 
-    def __str__(self):
-        return 0
-    
