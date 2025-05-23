@@ -1,6 +1,6 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
+            background: linear-gradient(to right,#1b263b, #1b263b);
             color: #333;
             margin: 0;
             padding: 40px 20px;

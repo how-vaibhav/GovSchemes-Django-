@@ -1,6 +1,6 @@
 /* Background gradient */
   body {
-    background: linear-gradient(to right, #1b263b, #1b263b);
+    background: linear-gradient(to right,#1b263b, #1b263b);
     min-height: 100vh;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   }

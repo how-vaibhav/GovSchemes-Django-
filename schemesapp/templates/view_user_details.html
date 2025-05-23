@@ -1,0 +1,10 @@
+{% load custom_tags %}
+<h2>Your Details</h2>
+<ul>
+  {% for label, value in fields %}
+  <li><strong>{{ label }}:</strong> {{ value }}</li>
+  {% endfor %}
+</ul>
+<!-- other fields -->
+
+<a href="{% url 'edit_user_details' %}">Edit</a>

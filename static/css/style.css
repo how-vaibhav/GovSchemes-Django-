@@ -5,7 +5,7 @@
       }
 
       .back {
-        background: url("{% static 'images/sikkim.jpg' %}");
+        background: url("/static/images/sikkim.jpg");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;

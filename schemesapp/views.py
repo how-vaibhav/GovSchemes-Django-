@@ -172,7 +172,26 @@ def scheme_list(request):
 
 def scheme_detail(request, pk):
     scheme = get_object_or_404(Scheme, pk=pk)
-    return render(request, 'schemes/scheme_detail.html', {'scheme': scheme})
+
+    feedbacks = Feedback.objects.all().order_by('-submitted_at')  # get all feedback for this scheme
+
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.scheme = scheme
+            feedback.user = request.user
+            feedback.save()
+            return redirect('scheme_detail', pk=pk)  # Redirect to avoid resubmission on refresh
+    else:
+        form = FeedbackForm()
+
+    context = {
+        'scheme': scheme,
+        'feedbacks': feedbacks,
+        'form': form,
+    }
+    return render(request, 'schemes/scheme_detail.html', context)
 
 @login_required
 @user_passes_test(is_employee)
@@ -185,21 +204,25 @@ def scheme_input(request):
             return redirect('schemes_view')
     else:
         form = Add_Scheme_Form()    
-    return render(request, 'schemes/add_scheme.html', {'form': form})
+    return render(request, 'schemesapp/add_scheme.html', {'form': form})
 
 @login_required
 def user_detail_input(request):
-    if request.method == 'POST':
-        form = User_Details_Form(request.POST)
-        if form.is_valid():
-            user_details = form.save(commit=False)
-            user_details.user = request.user
-            user_details.save()
-            messages.success(request, "User Data Added.")
-            return redirect('home')
-    else:
-        form = User_Details_Form()    
-    return render(request, 'user_detail.html', {'form': form})
+    try:
+        details = UserDetails.objects.get(user=request.user)
+        return redirect('view_user_details')  # Redirect to a view-only page if already submitted
+    except UserDetails.DoesNotExist:
+        if request.method == 'POST':
+            form = User_Details_Form(request.POST)
+            if form.is_valid():
+                user_details = form.save(commit=False)
+                user_details.user = request.user
+                user_details.save()
+                messages.success(request, "User Data Added.")
+                return redirect('home')
+        else:
+            form = User_Details_Form()    
+        return render(request, 'user_detail.html', {'form': form})
 
 @login_required
 def scheme_eligibility(request, pk):
@@ -255,3 +278,28 @@ def check_all_eligibility(request):
         'eligible_schemes': eligible_schemes,
         'total': len(eligible_schemes),
     })
+
+@login_required
+def view_user_details(request):
+    user = request.user
+
+    try:
+        details = UserDetails.objects.get(user=request.user)
+    except UserDetails.DoesNotExist:
+        return redirect('user_detail')
+
+    fields = [(field.verbose_name.title(), getattr(details, field.name)) for field in UserDetails._meta.fields if field.name != 'id']
+
+    return render(request, 'view_user_details.html', {'fields': fields})
+
+@login_required
+def edit_user_details(request):
+    details = UserDetails.objects.get(user=request.user)
+    if request.method == 'POST':
+        form = User_Details_Form(request.POST, instance=details)
+        if form.is_valid():
+            form.save()
+            return redirect('view_user_details')
+    else:
+        form = User_Details_Form(instance=details)
+    return render(request, 'edit_user_details.html', {'form': form})

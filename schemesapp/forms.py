@@ -3,11 +3,14 @@ from django.contrib.auth.models import User
 from .models import Feedback, Scheme, UserDetails
 
 class FeedbackForm(forms.ModelForm):
+
+    scheme = forms.ModelChoiceField(queryset=Scheme.objects.all(), empty_label="Select a Scheme", widget=forms.Select(attrs={'class': 'form_control'}))
+
     class Meta:
         model = Feedback
         fields = ['scheme', 'message']
         widgets = {
-            'scheme': forms.Select(attrs={'class': 'form-control'})
+            'message': forms.Textarea(attrs={'class': 'form_control', 'rows': 4})
         }
 
 class AddEmployee(forms.Form):

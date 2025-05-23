@@ -14,5 +14,20 @@
 
         <a href="{% url 'scheme_list' %}">← Back to list</a>
     </div>
+    <h2>Feedback</h2>
+
+{% if feedbacks %}
+  <ul>
+  {% for feedback in feedbacks %}
+    <li>
+    <strong>{{ feedback.user.username }}</strong> said: <br>
+      {{ feedback.message }} <br>
+      <small>Submitted on {{ feedback.submitted_at|date:"F j, Y, g:i a" }}</small>
+    </li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>No feedback available for this scheme.</p>
+{% endif %}
 </body>
 </html>
