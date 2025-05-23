@@ -126,7 +126,9 @@
 
       <nav>
         <a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
-        <a href="#"><i class="fas fa-landmark"></i> Schemes</a>
+        <a href="{% url 'scheme_list' %}"
+          ><i class="fas fa-landmark"></i> Schemes</a
+        >
         {% if user|has_group:"Employee" %}
         <a href="{% url 'view_feedbacks' %}"
           ><i class="fas fa-comments"></i> Feedbacks</a

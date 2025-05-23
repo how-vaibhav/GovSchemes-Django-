@@ -1,26 +1,26 @@
 <!-- templates/schemes/scheme_list.html -->
-{% extends "base.html" %} {% load static %}
+{% extends "base.html" %} {% load static %} {% block title %}Sikkim Government
+Schemes{% endblock %}
 
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="{% static "css/scheme_list.css" %}">
-    <title>Sikkim Government Schemes</title>
-  </head>
-  <body>
-    <h1>Sikkim Government Schemes</h1>
-    <ul>
-      {% for scheme in schemes %}
-      <li>
-        <h2>{{ scheme.name }}</h2>
-        <p><strong>Objective:</strong> {{ scheme.objective }}</p>
-        <p><strong>Benefits:</strong> {{ scheme.benefits }}</p>
-        <p><strong>Implementing Agency:</strong> {{ scheme.agency }}</p>
-        <a href="{% url 'scheme_detail' scheme.pk %}">
-          <button>View Details</button>
-        </a>
-      </li>
-      {% endfor %}
-    </ul>
-  </body>
-</html>
+{% block content%}
+<head>
+  <link rel="stylesheet" href="{% static "css/scheme_list.css" %}">
+</head>
+<body>
+  <h1>Sikkim Government Schemes</h1>
+  <ul>
+    {% for scheme in schemes %}
+    <li>
+      <h2>{{ scheme.name }}</h2>
+      <p><strong>Objective:</strong> {{ scheme.objective }}</p>
+      <p><strong>Benefits:</strong> {{ scheme.benefits }}</p>
+      <p><strong>Implementing Agency:</strong> {{ scheme.agency }}</p>
+      <a href="{% url 'scheme_detail' scheme.pk %}">
+        <button>View Details</button>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</body>
+{% endblock %}

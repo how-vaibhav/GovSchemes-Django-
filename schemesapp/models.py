@@ -33,5 +33,38 @@ class Scheme(models.Model):
     agency = models.CharField(max_length=255)
     full_description = models.TextField(blank=True, null=True) 
 
+    GENDER_CHOICES = [
+    ('M' ,'Male'),
+    ('F' ,'Female'),
+    ('T', "Transgender")
+    ]
+
+    MARITIAL_CHOICES = [
+    ('MARRIED' ,'Married'),
+    ('NOT MARRIED' ,'Never Married'),
+    ('WIDOWED', "Widowed"),
+    ('DIVORCEE', "Divorcee")
+    ]
+
+    CASTE_CHOICES = [
+    ('G' ,'General'),
+    ('OBC' ,'Other Backward Caste(OBC)'),
+    ('PVTG', "Particularly Vulnarable Tribal Group"),
+    ('SC', "Scheduled Class"),
+    ('ST', "Scheduled Tribe")
+    ]
+
+    gender= models.CharField(max_length=50, choices=GENDER_CHOICES, blank=True, null=True)
+    date_of_birth = models.DateField(default=None, blank=True, null=True)
+    age = models.IntegerField(blank=True, null=True)
+    maritial_status = models.CharField(max_length=50, choices=GENDER_CHOICES, blank=True, null=True)
+    location = models.CharField(max_length=100, choices=[('rural', "Rural"),('urban', "Urban")], blank=True, null=True)
+    caste = models.CharField(max_length=100, choices=CASTE_CHOICES, blank=True, null=True)
+    disability = models.BooleanField(default=False, blank=True, null=True)
+    minority = models.BooleanField(default=False, blank=True, null=True)
+    below_poverty_line = models.BooleanField(default=False, blank=True, null=True)
+    income = models.PositiveIntegerField(blank=True, null=True)
+
     def __str__(self):
-        return self.name
+        return 0
+    

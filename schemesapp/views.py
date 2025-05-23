@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from .forms import FeedbackForm, AddEmployee
+from .forms import FeedbackForm, AddEmployee, Add_Scheme_Form
 from .models import Feedback, Notification, Scheme
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
@@ -172,5 +172,17 @@ def scheme_list(request):
 
 def scheme_detail(request, pk):
     scheme = get_object_or_404(Scheme, pk=pk)
-    return render(request, 'schemesapp/scheme_detail.html', {'scheme': scheme})
+    return render(request, 'schemes/scheme_detail.html', {'scheme': scheme})
 
+@login_required
+@user_passes_test(is_employee)
+def scheme_input(request):
+    if request.method == 'POST':
+        form = Add_Scheme_Form(request.POST)
+        if form.is_valid():
+            scheme = form.save()
+            messages.success(request, "Feedback Added.")
+            return redirect('schemes_view')
+    else:
+        form = Add_Scheme_Form()    
+    return render(request, 'schemes/add_scheme.html', {'form': form})

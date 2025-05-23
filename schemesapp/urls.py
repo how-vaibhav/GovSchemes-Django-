@@ -13,4 +13,5 @@ urlpatterns = [
       path("translate/", views.translate_page, name="translate_text"),
       path('schemes/', views.scheme_list, name='scheme_list'),
       path('scheme/<int:pk>/', views.scheme_detail, name='scheme_detail'),
+      path('schemeadd/', views.scheme_input, name='add_scheme'),
 ]
