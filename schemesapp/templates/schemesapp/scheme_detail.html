@@ -13,6 +13,8 @@
         <p>{{ scheme.full_description }}</p>
 
         <a href="{% url 'scheme_list' %}">← Back to list</a>
+        <a href="{% url 'apply_scheme' %}">Apply</a>
+        <a href="{% url 'feedback' %}?scheme_id={{scheme.id}}">← Give Feedback</a>
     </div>
     <h2>Feedback</h2>
 

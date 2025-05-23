@@ -26,6 +26,8 @@ def home(request):
 
 @login_required
 def feedback(request):
+    scheme_id = request.GET.get('scheme_id')
+
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
@@ -35,7 +37,8 @@ def feedback(request):
             messages.success(request, 'Thank you for your feedback!')
             return redirect('feedback')
     else:
-        form = FeedbackForm()
+        form = FeedbackForm(initial={'scheme': scheme_id}) if scheme_id else FeedbackForm()
+
     return render(request, 'feedback/feedback.html', {'form': form})
 
 @login_required
@@ -190,7 +193,7 @@ def scheme_detail(request, pk):
             feedback.scheme = scheme
             feedback.user = request.user
             feedback.save()
-            return redirect('scheme_detail', pk=pk)  # Redirect to avoid resubmission on refresh
+            return redirect('schemesapp/scheme_detail', pk=pk)  # Redirect to avoid resubmission on refresh
     else:
         form = FeedbackForm()
 
@@ -199,7 +202,7 @@ def scheme_detail(request, pk):
         'feedbacks': feedbacks,
         'form': form,
     }
-    return render(request, 'schemes/scheme_detail.html', context)
+    return render(request, 'schemesapp/scheme_detail.html', context)
 
 @login_required
 @user_passes_test(is_employee)
