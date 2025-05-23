@@ -1,65 +1,217 @@
-{% load static %}
-{% load group_filters %}
+{% load static %} {% load group_filters %}
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Government Schemes Portal</title>
-  <link rel="icon" href="{% static 'images/favicon.ico' %}">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Government Schemes Portal</title>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" />
 
-  <!-- Font Awesome CDN for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-/M0dXYocydC5mMEQ6ga8j83pRm4sf90uZsLMFXNRGO3NzAOpUc1l9rFBI1kqS14CWw3yfUmeygcXKXL+2mE0hQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href='{% static 'css/style.css' %}'>
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      crossorigin="anonymous"
+    />
 
-  {% block extra_head %}{% endblock %}
-</head>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap"
+      rel="stylesheet"
+    />
 
-<body>
-  <div class='back'>
-    <header>
-      <h1>Government Schemes</h1>
-    </header>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 
-    <div class="profile-container">
-      <input type="checkbox" id="profile-toggle" />
-      <label for="profile-toggle">
-        <img src="https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg" alt="Profile" class="profile-pic" />
-      </label>
-      <div class="dropdown-menu">
-        {% if user.is_authenticated %}
-        <p><i class="fas fa-user-circle"></i> {{ user.get_full_name|default:user.username }}</p>
-        {% else %}
-        <p><i class="fas fa-user"></i> Guest</p>
-        {% endif %}
+    {% block extra_head %}{% endblock %}
+  </head>
 
-        {% if user.is_superuser %}
-        <a href="/addemployee/"><i class="fas fa-user-shield"></i> Authenticate</a>
-        {% endif %}
-
-        {% if user.is_authenticated %}
-        <a href="/logout/"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        {% else %}
-        <a href="/login/"><i class="fas fa-sign-in-alt"></i> Login</a>
-        <a href="/register/"><i class="fas fa-user-plus"></i> Sign Up</a>
-        {% endif %}
-      </div>
+  <body>
+    <div class="login-message" id="login-msg">
+      <i class="fas fa-check-circle"></i> You have logged in to GovAid
+    </div>
+    <div class="logout-message" id="logout-msg">
+      <i class="fas fa-sign-out-alt"></i> You have logged out of GovAid
     </div>
 
-    <nav>
-      <a href="{% url 'home' %}">Home</a>
-      <a href="#">Schemes</a>
-      {% if user|has_group:"Employee" %}
-        <a href="{% url 'view_feedbacks' %}">Feedbacks</a>
-      {% else %}
-        <a href="{% url 'feedback' %}">Feedback</a>
-      {% endif %}
-    </nav>
-  </div>
+    <script>
+      const loginMsg = document.getElementById("login-msg");
+      const logoutMsg = document.getElementById("logout-msg");
 
-  <main>
-    {% block content %}
-    {% endblock %}
-  </main>
-</body>
+      if (localStorage.getItem("justLoggedIn") === "true") {
+        loginMsg.style.display = "block";
+        setTimeout(() => {
+          loginMsg.style.display = "none";
+        }, 4000);
+        localStorage.removeItem("justLoggedIn");
+      }
+
+      if (localStorage.getItem("justLoggedOut") === "true") {
+        logoutMsg.style.display = "block";
+        setTimeout(() => {
+          logoutMsg.style.display = "none";
+        }, 4000);
+        localStorage.removeItem("justLoggedOut");
+      }
+    </script>
+
+    <div class="back">
+      <header>
+        <h1>Sikkim Government</h1>
+      </header>
+
+      <div class="top-container">
+        <div class="profile-container">
+          <input type="checkbox" id="profile-toggle" />
+          <label for="profile-toggle">
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg"
+              alt="Profile"
+              class="profile-pic"
+            />
+          </label>
+          <div class="dropdown-menu">
+            {% if user.is_authenticated %}
+            <p>
+              <i class="fas fa-user-circle"></i>
+              {{user.get_full_name|default:user.username }}
+            </p>
+            <a
+              href="{% url 'logout' %}"
+              onclick="localStorage.setItem('justLoggedOut', 'true')"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
+            {% else %}
+            <p><i class="fas fa-user"></i> Guest</p>
+            <a
+              href="{% url 'login' %}"
+              onclick="localStorage.setItem('justLoggedIn', 'true')"
+              ><i class="fas fa-sign-in-alt"></i> Login</a
+            >
+            <a href="{% url 'register' %}"
+              ><i class="fas fa-user-plus"></i> Sign Up</a
+            >
+            {% endif %} {% if user.is_superuser %}
+            <a href="{% url 'add_employee' %}"
+              ><i class="fas fa-user-shield"></i> Authenticate</a
+            >
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="notification-container">
+          <button id="notification-button" class="notification-btn">
+            <i class="fas fa-bell"></i>
+            {% if notifications|length > 0 %}
+            <span class="dot"></span>
+            {% endif %}
+          </button>
+
+          <div id="notification-dropdown" class="hidden">
+            {% if notifications %}
+            <ul>
+              {% for notification in notifications %}
+              <li>
+                {{ notification.message }} {% if notification.link %}
+                <a href="{{ notification.link }}">View</a>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p>No new notifications</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <nav>
+        <a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
+        <a href="#"><i class="fas fa-landmark"></i> Schemes</a>
+        {% if user|has_group:"Employee" %}
+        <a href="{% url 'view_feedbacks' %}"
+          ><i class="fas fa-comments"></i> Feedbacks</a
+        >
+        {% else %}
+        <a href="{% url 'feedback' %}"
+          ><i class="fas fa-comment-dots"></i> Feedback</a
+        >
+        {% endif %}
+      </nav>
+    </div>
+
+    <main>{% block content %}{% endblock %}</main>
+
+    <!-- Footer -->
+    <div class="footer text-center">
+      <div class="row text-start">
+        <div class="col-md-4">
+          <h5>About Us</h5>
+          <ul>
+            <li><a href="#">Mission & Vision</a></li>
+            <li><a href="#">Leadership</a></li>
+            <li><a href="#">Partnerships</a></li>
+            <li><a href="#">Transparency</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Important Links</h5>
+          <ul>
+            <li><a href="#">Govt. of Sikkim</a></li>
+            <li><a href="#">Central Schemes</a></li>
+            <li><a href="#">Downloads</a></li>
+            <li><a href="#">FAQs</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <ul>
+            <li><a href="mailto:support@govaid.in">support@govaid.in</a></li>
+            <li><a href="tel:+919876543210">+91-9876543210</a></li>
+            <li>Address: Gangtok, Sikkim</li>
+          </ul>
+        </div>
+      </div>
+      <hr class="bg-light" />
+      <p>&copy; 2025 GovAid. All rights reserved.</p>
+    </div>
+  </body>
+
+  <script>
+    document
+      .getElementById("translate-btn")
+      .addEventListener("click", async () => {
+        const targetLang = "hi"; // 'hi' for Hindi; change to your desired language code
+        console.log("no");
+        const elements = document.querySelectorAll(
+          "p, h1, h2, h3, span, li, a, td, th"
+        );
+
+        for (let el of elements) {
+          const originalText = el.innerText.trim();
+          if (originalText.length > 0) {
+            try {
+              const res = await fetch("https://libretranslate.com/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  q: originalText,
+                  source: "en",
+                  target: targetLang,
+                  format: "text",
+                }),
+              });
+
+              const data = await res.json();
+              if (data.translatedText) {
+                el.innerText = data.translatedText;
+              }
+            } catch (err) {
+              console.error("Translation error:", err);
+            }
+          }
+        }
+      });
+  </script>
 </html>

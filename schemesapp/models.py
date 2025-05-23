@@ -19,3 +19,19 @@ class Feedback(models.Model):
         return f"Feedback by {self.user.username}"
     
 
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.CharField(max_length=255)
+    link = models.URLField(blank=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+class Scheme(models.Model):
+    name = models.CharField(max_length=255)
+    objective = models.TextField()
+    benefits = models.TextField()
+    agency = models.CharField(max_length=255)
+    full_description = models.TextField(blank=True, null=True) 
+
+    def __str__(self):
+        return self.name

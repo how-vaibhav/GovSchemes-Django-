@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from .forms import FeedbackForm, AddEmployee
-from .models import Feedback
+from .models import Feedback, Notification, Scheme
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
@@ -8,10 +9,17 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.conf import settings
+import json, requests
 # Create your views here.
 
 def home(request):
-    return render(request, 'home.html')
+    notifications = []
+
+    if request.user.is_authenticated:
+        notifications = Notification.objects.filter(user=request.user, is_read=False).order_by('-created_at')
+        print("User:", request.user)
+        print("Notifications:", notifications)
+    return render(request, 'home.html', {'notifications': notifications})
 
 @login_required
 def feedback(request):
@@ -79,7 +87,6 @@ def register(request):
             form.save()
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
-            passkey = form.cleaned_data.get('passkey')
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -127,8 +134,43 @@ def reply_feedback(request, feedback_id):
         reply = request.POST.get('reply')
         feedback.reply = reply
         feedback.save()
+    
+        Notification.objects.create(
+            user=feedback.user,
+            message=f"Your feedback on {feedback.scheme} has been replied to.",
+            link=f"/viewfeedbacks/#{feedback.id}"
+        )
+
         return redirect('view_feedbacks')
     return render(request, 'feedback/reply_feedback.html', {'feedback': feedback})
 
+@csrf_exempt
+def translate_page(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        text = data.get("text","")
+        source = data.get("source","en")
+        target = data.get("target","")
 
+        response = requests.post("http://localhost:5000/translate", json={
+            "q": text,
+            "source" : source,
+            "target":target,
+            "format":"text"
+        })
+
+        if response.status_code == 200:
+            return JsonResponse({"translatedText": response.json().get("translatedText")})
+        else:
+            return JsonResponse({"error": "Translation failed"}, status=500)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+def scheme_list(request):
+    schemes = Scheme.objects.all()
+    return render(request, 'scheme_list.html', {'schemes': schemes})
+
+def scheme_detail(request, pk):
+    scheme = get_object_or_404(Scheme, pk=pk)
+    return render(request, 'schemesapp/scheme_detail.html', {'scheme': scheme})
 
