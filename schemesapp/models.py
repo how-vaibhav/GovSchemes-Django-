@@ -56,11 +56,47 @@ class Scheme(models.Model):
 
     gender= models.CharField(max_length=50, choices=GENDER_CHOICES, blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
-    maritial_status = models.CharField(max_length=50, choices=GENDER_CHOICES, blank=True, null=True)
+    maritial_status = models.CharField(max_length=50, choices=MARITIAL_CHOICES, blank=True, null=True)
     location = models.CharField(max_length=100, choices=[('rural', "Rural"),('urban', "Urban")], blank=True, null=True)
     caste = models.CharField(max_length=100, choices=CASTE_CHOICES, blank=True, null=True)
     disability = models.BooleanField(default=False, blank=True, null=True)
     minority = models.BooleanField(default=False, blank=True, null=True)
     below_poverty_line = models.BooleanField(default=False, blank=True, null=True)
+    income = models.PositiveIntegerField(blank=True, null=True)
+
+class UserDetails(models.Model):
+    GENDER_CHOICES = [
+    ('M' ,'Male'),
+    ('F' ,'Female'),
+    ('T', "Transgender")
+    ]
+
+    MARITIAL_CHOICES = [
+    ('MARRIED' ,'Married'),
+    ('NOT MARRIED' ,'Never Married'),
+    ('WIDOWED', "Widowed"),
+    ('DIVORCEE', "Divorcee")
+    ]
+
+    CASTE_CHOICES = [
+    ('G' ,'General'),
+    ('OBC' ,'Other Backward Caste(OBC)'),
+    ('PVTG', "Particularly Vulnarable Tribal Group"),
+    ('SC', "Scheduled Class"),
+    ('ST', "Scheduled Tribe")
+    ]
+
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    gender= models.CharField(max_length=50, choices=GENDER_CHOICES)
+    age = models.IntegerField()
+    maritial_status = models.CharField(max_length=50, choices=MARITIAL_CHOICES)
+    location = models.CharField(max_length=100, choices=[('rural', "Rural"),('urban', "Urban")])
+    caste = models.CharField(max_length=100, choices=CASTE_CHOICES)
+    disability = models.BooleanField()
+    minority = models.BooleanField()
+    below_poverty_line = models.BooleanField()
     income = models.PositiveIntegerField(blank=True, null=True)
 

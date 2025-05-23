@@ -14,4 +14,5 @@ urlpatterns = [
       path('schemes/', views.scheme_list, name='scheme_list'),
       path('scheme/<int:pk>/', views.scheme_detail, name='scheme_detail'),
       path('schemeadd/', views.scheme_input, name='add_scheme'),
+      path('userdetails/', views.user_detail_input, name='user_detail'),
 ]

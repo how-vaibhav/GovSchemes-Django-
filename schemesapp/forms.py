@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Feedback, Scheme
+from .models import Feedback, Scheme, UserDetails
 
 class FeedbackForm(forms.ModelForm):
     class Meta:
@@ -23,3 +23,17 @@ class Add_Scheme_Form(forms.ModelForm):
             'maritial_status': forms.Select(attrs={'class': 'form-control'}),
             'caste': forms.Select(attrs={'class': 'form-control'}),
         }
+
+class User_Details_Form(forms.ModelForm):
+
+    class Meta:
+        model = UserDetails
+        fields = ['name', 'age', 'email', 'gender', 'maritial_status', 'location', 'caste', 'disability', 'minority', 'below_poverty_line', 'income' ]
+        widgets = {
+                'gender': forms.Select(attrs={'class': 'form-control'}),
+                'maritial_status': forms.Select(attrs={'class': 'form-control'}),
+                'caste': forms.Select(attrs={'class': 'form-control'}),
+                'disability': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
+                'minority': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
+                'below_poverty_line': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
+            }

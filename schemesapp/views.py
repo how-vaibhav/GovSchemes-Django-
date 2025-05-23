@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from .forms import FeedbackForm, AddEmployee, Add_Scheme_Form
-from .models import Feedback, Notification, Scheme
+from .forms import FeedbackForm, AddEmployee, Add_Scheme_Form, User_Details_Form
+from .models import Feedback, Notification, Scheme, UserDetails
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
@@ -186,3 +186,17 @@ def scheme_input(request):
     else:
         form = Add_Scheme_Form()    
     return render(request, 'schemes/add_scheme.html', {'form': form})
+
+@login_required
+def user_detail_input(request):
+    if request.method == 'POST':
+        form = User_Details_Form(request.POST)
+        if form.is_valid():
+            user_details = form.save(commit=False)
+            user_details.user = request.user
+            user_details.save()
+            messages.success(request, "User Data Added.")
+            return redirect('home')
+    else:
+        form = User_Details_Form()    
+    return render(request, 'user_detail.html', {'form': form})
