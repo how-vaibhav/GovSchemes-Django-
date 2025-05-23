@@ -1,0 +1,12 @@
+<h2>You are eligible for {{ total }} scheme{{ total|pluralize }}</h2>
+
+<ul>
+  {% for scheme in eligible_schemes %}
+  <li>
+    <h4>{{ scheme.name }}</h4>
+    <p>{{ scheme.description }}</p>
+  </li>
+  {% empty %}
+  <li>You are not currently eligible for any schemes.</li>
+  {% endfor %}
+</ul>

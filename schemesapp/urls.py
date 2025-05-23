@@ -15,4 +15,6 @@ urlpatterns = [
       path('scheme/<int:pk>/', views.scheme_detail, name='scheme_detail'),
       path('schemeadd/', views.scheme_input, name='add_scheme'),
       path('userdetails/', views.user_detail_input, name='user_detail'),
+      path('eligibility/<int:pk>/', views.scheme_eligibility, name='user_eligibility'),
+      path('check-eligibility/', views.check_all_eligibility, name='check_all_eligibility'),
 ]

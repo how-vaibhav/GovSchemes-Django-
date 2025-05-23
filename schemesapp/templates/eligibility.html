@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Scheme Eligibility</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1,
+      h2 {
+        color: #333;
+      }
+      .eligible {
+        color: green;
+        font-weight: bold;
+      }
+      .not-eligible {
+        color: red;
+        font-weight: bold;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Scheme Eligibility Check</h1>
+
+    <div class="section">
+      <h2>Scheme: {{ scheme.name }}</h2>
+      <p><strong>Description:</strong> {{ scheme.description }}</p>
+    </div>
+
+    <div class="section">
+      <h2>Your Details</h2>
+      <table>
+        <tr>
+          <th>Age</th>
+          <td>{{ details.age }}</td>
+        </tr>
+        <tr>
+          <th>Income</th>
+          <td>{{ details.income }}</td>
+        </tr>
+        <tr>
+          <th>Gender</th>
+          <td>{{ details.gender }}</td>
+        </tr>
+        <tr>
+          <th>Caste</th>
+          <td>{{ details.caste }}</td>
+        </tr>
+        <tr>
+          <th>Disability</th>
+          <td>{{ details.disability }}</td>
+        </tr>
+        <tr>
+          <th>Marital Status</th>
+          <td>{{ details.marital_status }}</td>
+        </tr>
+        <tr>
+          <th>Location</th>
+          <td>{{ details.location }}</td>
+        </tr>
+        <tr>
+          <th>Minority</th>
+          <td>{{ details.minority }}</td>
+        </tr>
+        <tr>
+          <th>Below Poverty Line</th>
+          <td>{{ details.below_poverty_line }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      {% if is_eligible %}
+      <p class="eligible">🎉 You are eligible for this scheme!</p>
+      {% else %}
+      <p class="not-eligible">
+        ❌ Sorry, you are not eligible for this scheme.
+      </p>
+      {% endif %}
+    </div>
+  </body>
+</html>

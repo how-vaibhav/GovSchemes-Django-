@@ -200,3 +200,58 @@ def user_detail_input(request):
     else:
         form = User_Details_Form()    
     return render(request, 'user_detail.html', {'form': form})
+
+@login_required
+def scheme_eligibility(request, pk):
+    try:
+        details = UserDetails.objects.get(user=request.user)
+    except UserDetails.DoesNotExist:
+        return redirect('user_detail')
+    
+    scheme = get_object_or_404(Scheme, pk=pk)
+
+    checks = {
+        'min_age': lambda: details.age >= scheme.min_age if scheme.min_age is not None else True,
+        'max_income': lambda: details.income <= scheme.income if scheme.income is not None else True,
+        'gender': lambda: details.gender.lower() == scheme.gender.lower() if scheme.gender else True,
+        'caste': lambda: details.caste == scheme.cast_reequired if scheme.caste is not None else True,
+        'disability': lambda: details.disability == scheme.disability if scheme.disability is not None else True,
+        'marital_status': lambda: details.maritial_status == scheme.maritial_status if scheme.maritial_status is not None else True,
+        'location': lambda: details.location == scheme.location if scheme.location is not None else True,
+        'minority': lambda: details.minority == scheme.minority if scheme.minority is not None else True,
+        'location': lambda: details.below_poverty_line == scheme.below_poverty_line if scheme.below_poverty_line is not None else True, 
+    }
+
+    is_eligible = all(check() for check in checks.values())
+
+    return render(request, 'eligibility.html', {'details': details, 'scheme':scheme, 'is_eligible':is_eligible})
+
+@login_required
+def check_all_eligibility(request):
+    try:
+        details = UserDetails.objects.get(user=request.user)
+    except UserDetails.DoesNotExist:
+        return redirect('user_detail')  # Force user to fill details first
+
+    eligible_schemes = []
+
+    for scheme in Scheme.objects.all():
+        checks = [
+            details.age >= scheme.min_age if scheme.min_age is not None else True,
+            details.income <= scheme.income if scheme.income is not None else True,
+            details.gender.lower() == scheme.gender.lower() if scheme.gender is not None else True,
+            details.caste == scheme.caste if scheme.caste is not None else True,
+            details.disability == scheme.disability if scheme.disability is not None else True,
+            details.maritial_status == scheme.maritial_status if scheme.maritial_status is not None else True,
+            details.location == scheme.location if scheme.location is not None else True,
+            details.minority == scheme.minority if scheme.minority is not None else True,
+            details.below_poverty_line == scheme.below_poverty_line if scheme.below_poverty_line is not None else True,
+        ]
+
+        if all(checks):
+            eligible_schemes.append(scheme)
+
+    return render(request, 'eligible_schemes.html', {
+        'eligible_schemes': eligible_schemes,
+        'total': len(eligible_schemes),
+    })

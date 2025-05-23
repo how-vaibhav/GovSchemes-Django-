@@ -19,6 +19,9 @@ Schemes{% endblock %}
       <a href="{% url 'scheme_detail' scheme.pk %}">
         <button>View Details</button>
       </a>
+      <a href="{% url 'user_eligibility' scheme.pk %}">
+        <button>Check Eligibility</button>
+      </a>
     </li>
     {% endfor %}
   </ul>

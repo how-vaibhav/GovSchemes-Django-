@@ -55,7 +55,7 @@ class Scheme(models.Model):
     ]
 
     gender= models.CharField(max_length=50, choices=GENDER_CHOICES, blank=True, null=True)
-    age = models.IntegerField(blank=True, null=True)
+    min_age = models.IntegerField(blank=True, null=True)
     maritial_status = models.CharField(max_length=50, choices=MARITIAL_CHOICES, blank=True, null=True)
     location = models.CharField(max_length=100, choices=[('rural', "Rural"),('urban', "Urban")], blank=True, null=True)
     caste = models.CharField(max_length=100, choices=CASTE_CHOICES, blank=True, null=True)
@@ -87,7 +87,7 @@ class UserDetails(models.Model):
     ]
 
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=0)
     name = models.CharField(max_length=255)
     email = models.EmailField()
     gender= models.CharField(max_length=50, choices=GENDER_CHOICES)
@@ -98,5 +98,5 @@ class UserDetails(models.Model):
     disability = models.BooleanField()
     minority = models.BooleanField()
     below_poverty_line = models.BooleanField()
-    income = models.PositiveIntegerField(blank=True, null=True)
+    income = models.PositiveIntegerField()
 
