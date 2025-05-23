@@ -9,5 +9,8 @@ urlpatterns = [
       path('register/', views.register, name = "register"),
       path('logout/', views.logout_view, name = "logout"),
       path('addemployee/', views.add_employee, name= "add_employee"),
-      path('feedbacks/respond/<int:feedback_id>/', views.reply_feedback, name="reply_feedback")
+      path('feedbacks/respond/<int:feedback_id>/', views.reply_feedback, name="reply_feedback"),
+      path("translate/", views.translate_page, name="translate_text"),
+      path('schemes/', views.scheme_list, name='scheme_list'),
+      path('scheme/<int:pk>/', views.scheme_detail, name='scheme_detail'),
 ]

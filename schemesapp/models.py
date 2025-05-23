@@ -25,3 +25,13 @@ class Notification(models.Model):
     link = models.URLField(blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+
+class Scheme(models.Model):
+    name = models.CharField(max_length=255)
+    objective = models.TextField()
+    benefits = models.TextField()
+    agency = models.CharField(max_length=255)
+    full_description = models.TextField(blank=True, null=True) 
+
+    def __str__(self):
+        return self.name

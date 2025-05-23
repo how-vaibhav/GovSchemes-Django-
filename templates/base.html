@@ -52,22 +52,6 @@
         }, 4000);
         localStorage.removeItem("justLoggedOut");
       }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const button = document.getElementById("notification-button");
-        const dropdown = document.getElementById("notification-dropdown");
-
-        button.addEventListener("click", () => {
-          dropdown.classList.toggle("hidden");
-        });
-
-        // Optional: Hide when clicking outside
-        document.addEventListener("click", function (e) {
-          if (!button.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add("hidden");
-          }
-        });
-      });
     </script>
 
     <div class="back">
@@ -191,4 +175,43 @@
       <p>&copy; 2025 GovAid. All rights reserved.</p>
     </div>
   </body>
+
+  <script>
+    document
+      .getElementById("translate-btn")
+      .addEventListener("click", async () => {
+        const targetLang = "hi"; // 'hi' for Hindi; change to your desired language code
+        console.log("no");
+        const elements = document.querySelectorAll(
+          "p, h1, h2, h3, span, li, a, td, th"
+        );
+
+        for (let el of elements) {
+          const originalText = el.innerText.trim();
+          if (originalText.length > 0) {
+            try {
+              const res = await fetch("https://libretranslate.com/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  q: originalText,
+                  source: "en",
+                  target: targetLang,
+                  format: "text",
+                }),
+              });
+
+              const data = await res.json();
+              if (data.translatedText) {
+                el.innerText = data.translatedText;
+              }
+            } catch (err) {
+              console.error("Translation error:", err);
+            }
+          }
+        }
+      });
+  </script>
 </html>

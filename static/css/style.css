@@ -307,3 +307,12 @@
     right: 0;
     z-index: 1000;
   }
+
+  .translate_btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    border: none;
+    background: transparent;
+}

@@ -1,0 +1,8 @@
+<!-- templates/schemesapp/scheme_detail.html -->
+<h1>{{ scheme.name }}</h1>
+<p><strong>Short Description:</strong> {{ scheme.objective }}</p>
+<hr>
+<h2>Full Details:</h2>
+<p>{{ scheme.full_description }}</p>
+
+<a href="{% url 'scheme_list' %}">Back to list</a>
