@@ -1,8 +1,18 @@
-<!-- templates/schemesapp/scheme_detail.html -->
-<h1>{{ scheme.name }}</h1>
-<p><strong>Short Description:</strong> {{ scheme.objective }}</p>
-<hr>
-<h2>Full Details:</h2>
-<p>{{ scheme.full_description }}</p>
+{% load static %}
 
-<a href="{% url 'scheme_list' %}">Back to list</a>
+<!-- templates/schemesapp/scheme_detail.html -->
+<head>
+<link rel="stylesheet" href="{% static 'css/scheme_details.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ scheme.name }}</h1>
+        <p><strong>Short Description:</strong> {{ scheme.objective }}</p>
+        <hr>
+        <h2>Full Details:</h2>
+        <p>{{ scheme.full_description }}</p>
+
+        <a href="{% url 'scheme_list' %}">← Back to list</a>
+    </div>
+</body>
+</html>
