@@ -344,6 +344,7 @@ def scrape_schemes_view(request):
 def scrape_page(request):
     return render(request, 'scrape.html', {'quotes': None})
 
+
 def verhoeff_check(num):
     # Multiplication table d
     d = [
