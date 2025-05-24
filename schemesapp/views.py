@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 from django.views.decorators.http import require_POST
 # Create your views here.
 
+#Home page view, that sends username of user and their notifications if they have logged in
 def home(request):
     notifications = []
 
@@ -26,6 +27,8 @@ def home(request):
         print("Notifications:", notifications)
     return render(request, 'home.html', {'notifications': notifications})
 
+
+#view for feedback submission, it requires the user to be signed in to give feedbakcs
 @login_required
 def feedback(request):
     scheme_id = request.GET.get('scheme_id')
@@ -43,6 +46,8 @@ def feedback(request):
 
     return render(request, 'feedback/feedback.html', {'form': form})
 
+#view for users to view feedbacks they sent
+#if a user who is in employee group accesses this page, then they are shown all feedbacks and given an option to reply to them
 @login_required
 def view_feedback(request):
 
@@ -81,6 +86,8 @@ def view_feedback(request):
 
     return render(request, 'feedback/viewfeedback.html',{'feedbacks': feedbacks, 'scheme_choices': scheme_choices, 'selected_scheme': scheme_filter, 'selected_replied': replied_filter, 'total_feedbacks':total_feedbacks, 'total_replied':total_replied, 'total_unreplied':total_unreplied,})
 
+
+#view for login-page
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -93,6 +100,7 @@ def login_view(request):
     
     return render(request, 'registration/login.html', {'form': form})
 
+#view for sign-in page
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -477,7 +485,6 @@ def accept_application(request, app_id):
         is_read=False,
     )
     
-    messages.success(request, 'Application accepted and user notified.')
     return redirect('all_applications')
 
 
@@ -496,7 +503,6 @@ def reject_application(request, app_id):
         is_read=False,
     )
 
-    messages.error(request, 'Application rejected and user notified.')
     return redirect('all_applications')
 
 @login_required
