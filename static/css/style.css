@@ -1,11 +1,12 @@
  body {
+            background: linear-gradient(to right, #1b263b, #1b263b);
         margin: 0;
         font-family: cursive;
         background-color: #f9f9f9;
       }
 
       .back {
-        background: url("{% static 'images/sikkim.jpg' %}");
+        background: url("/static/images/sikkim.jpg");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -238,8 +239,9 @@
     }
 
     .notification-container {
-    display: inline-block;
-    margin: 10px;
+      display: inline-block;
+      margin: 10px;
+      position: relative;
   }
 
   #notification-dropdown {
@@ -306,6 +308,7 @@
     top: 20px;
     right: 0;
     z-index: 1000;
+    position: absolute;
   }
 
   .translate_btn {
@@ -315,4 +318,25 @@
     z-index: 9999;
     border: none;
     background: transparent;
+}
+
+.read-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 6px 10px;      /* smaller padding */
+  font-weight: 500;
+  border-radius: 6px;
+  transition: 0.3s ease;
+  font-size: 14px;        /* smaller font */
+  width: auto;            /* auto width for natural button size */
+  height: auto;           /* auto height */
+  cursor: pointer;
+}
+
+.read-btn:hover {
+  background-color: #218838; /* slightly darker green on hover */
+}
+.read-btn:focus {
+  outline: none;                 /* Remove default outline */
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5); /* Green glow on focus */
 }

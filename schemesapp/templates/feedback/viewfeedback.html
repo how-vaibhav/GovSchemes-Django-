@@ -12,6 +12,15 @@
 
 {% block content %}
 
+{% if user|has_group:"Employee" %}
+<div class="feedback-summary">
+  <span><strong>Total Feedbacks:</strong> {{ total_feedbacks }}</span> |
+  <span class="replied"><strong>Replied:</strong> {{ total_replied }}</span> |
+  <span class="unreplied"><strong>Unreplied:</strong> {{ total_unreplied }}</span>
+</div>
+
+{% endif %}
+
 <div class="container feedback-container">
     <h2>Feedbacks</h2>
 

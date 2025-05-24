@@ -1,54 +1,42 @@
-    body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
+body {
+    background: linear-gradient(to right, #1b263b, #1b263b);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
 
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-        }
+  .scheme-card {
+    border-radius: 15px;
+    background-color: #f5f9ff;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+  }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
+  .scheme-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
 
-        li {
-            background-color: #ffffff;
-            margin: 20px auto;
-            padding: 20px;
-            max-width: 700px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+  .card-title {
+    color: #0d6efd;
+  }
 
-        h2 {
-            color: #34495e;
-        }
+  .btn-outline-primary {
+    border-color: #0d6efd;
+    color: #0d6efd;
+  }
 
-        p {
-            line-height: 1.6;
-            margin: 8px 0;
-        }
+  .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: #fff;
+  }
 
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
+  .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
 
-        button:hover {
-            background-color: #2980b9;
-        }
+  .btn-primary:hover {
+    background-color: #063971;
+  }
 
-        a {
-            text-decoration: none;
-        }
+  h1 {
+    color: #ffffff;
+  }

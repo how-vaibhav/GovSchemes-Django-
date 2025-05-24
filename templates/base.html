@@ -80,6 +80,12 @@
               onclick="localStorage.setItem('justLoggedOut', 'true')"
               ><i class="fas fa-sign-out-alt"></i> Logout</a
             >
+            <a href="{% url 'view_user_details' %}">
+              <i class="fas fa-id-badge"></i> User Details
+            </a>
+            <a href="{% url 'check_all_eligibility' %}"
+              ><i class="fas fa-search"></i>Check My Eligibility</a
+            >
             {% else %}
             <p><i class="fas fa-user"></i> Guest</p>
             <a
@@ -109,10 +115,13 @@
           <div id="notification-dropdown" class="hidden">
             {% if notifications %}
             <ul>
-              {% for notification in notifications %}
-              <li>
-                {{ notification.message }} {% if notification.link %}
-                <a href="{{ notification.link }}">View</a>
+              {% for notif in notifications %}
+              <li
+                class="{% if notif.is_read %}read{% endif %}"
+                data-id="{{ notif.id }}"
+              >
+                {{ notif.message }} {% if not notif.is_read %}
+                <button class="read-btn">Read</button>
                 {% endif %}
               </li>
               {% endfor %}
@@ -126,10 +135,18 @@
 
       <nav>
         <a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
-        <a href="#"><i class="fas fa-landmark"></i> Schemes</a>
+        <a href="{% url 'scheme_list' %}"
+          ><i class="fas fa-landmark"></i> Schemes</a
+        >
         {% if user|has_group:"Employee" %}
         <a href="{% url 'view_feedbacks' %}"
           ><i class="fas fa-comments"></i> Feedbacks</a
+        >
+        <a href="{% url 'add_scheme' %}"
+          ><i class="fas fa-add"></i> Add Scheme</a
+        >
+        <a href="{% url 'all_applications' %}"
+          ><i class="fas fa-check"></i>Approve Application</a
         >
         {% else %}
         <a href="{% url 'feedback' %}"
@@ -174,44 +191,82 @@
       <hr class="bg-light" />
       <p>&copy; 2025 GovAid. All rights reserved.</p>
     </div>
-  </body>
+    <script>
+      // Notification dropdown toggle
+      document
+        .getElementById("notification-button")
+        .addEventListener("click", function () {
+          const dropdown = document.getElementById("notification-dropdown");
+          dropdown.classList.toggle("hidden");
+        });
 
-  <script>
-    document
-      .getElementById("translate-btn")
-      .addEventListener("click", async () => {
-        const targetLang = "hi"; // 'hi' for Hindi; change to your desired language code
-        console.log("no");
-        const elements = document.querySelectorAll(
-          "p, h1, h2, h3, span, li, a, td, th"
-        );
-
-        for (let el of elements) {
-          const originalText = el.innerText.trim();
-          if (originalText.length > 0) {
-            try {
-              const res = await fetch("https://libretranslate.com/", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  q: originalText,
-                  source: "en",
-                  target: targetLang,
-                  format: "text",
-                }),
-              });
-
-              const data = await res.json();
-              if (data.translatedText) {
-                el.innerText = data.translatedText;
-              }
-            } catch (err) {
-              console.error("Translation error:", err);
-            }
-          }
+      // Close notification dropdown on outside click
+      document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("notification-dropdown");
+        const button = document.getElementById("notification-button");
+        if (
+          !button.contains(event.target) &&
+          !dropdown.contains(event.target)
+        ) {
+          dropdown.classList.add("hidden");
         }
       });
-  </script>
+
+      // CSRF token getter function (placed globally)
+      function getCSRFToken() {
+        let token = document.querySelector('meta[name="csrf-token"]');
+        if (token) return token.getAttribute("content");
+
+        // fallback if you want to get it from cookies
+        function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === name + "=") {
+                cookieValue = decodeURIComponent(
+                  cookie.substring(name.length + 1)
+                );
+                break;
+              }
+            }
+          }
+          return cookieValue;
+        }
+        return getCookie("csrftoken");
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".read-btn").forEach((button) => {
+          button.addEventListener("click", (e) => {
+            e.preventDefault();
+            const li = e.target.closest("li");
+            const notifId = li.getAttribute("data-id");
+
+            fetch("{% url 'mark_read' %}", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCSRFToken(),
+              },
+              body: new URLSearchParams({
+                notification_id: notifId,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.success) {
+                  // Remove notification from UI
+                  li.remove();
+                } else {
+                  alert("Failed to mark notification read.");
+                }
+              })
+              .catch(() => alert("Error communicating with server."));
+          });
+        });
+      });
+    </script>
+  </body>
 </html>
