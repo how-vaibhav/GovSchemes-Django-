@@ -68,18 +68,20 @@ class Scheme(models.Model):
 
     gender= models.CharField(max_length=50, choices=GENDER_CHOICES, blank=True, null=True)
     min_age = models.IntegerField(blank=True, null=True)
+    max_age = models.IntegerField(blank=True, null=True)
     maritial_status = models.CharField(max_length=50, choices=MARITIAL_CHOICES, blank=True, null=True)
     location = models.CharField(max_length=100, choices=[('rural', "Rural"),('urban', "Urban")], blank=True, null=True)
     caste = models.CharField(max_length=100, choices=CASTE_CHOICES, blank=True, null=True)
-    disability = models.BooleanField(default=False, blank=True, null=True)
-    minority = models.BooleanField(default=False, blank=True, null=True)
-    below_poverty_line = models.BooleanField(default=False, blank=True, null=True)
-    income = models.PositiveIntegerField(blank=True, null=True)
+    disability = models.BooleanField(blank=True, null=True, default=None)
+    minority = models.BooleanField(blank=True, null=True, default=None)
+    below_poverty_line = models.BooleanField(blank=True, null=True, default=None)
+    max_income = models.PositiveIntegerField(blank=True, null=True, default=None)
 
 
     def is_user_eligible(self, details):
         checks = {
         'min_age': lambda: details.age >= self.min_age if self.min_age is not None else True,
+        'max_age': lambda: details.age <= self.min_age if self.min_age is not None else True,
         'max_income': lambda: details.income <= self.income if self.income is not None else True,
         'gender': lambda: details.gender.lower() == self.gender.lower() if self.gender else True,
         'caste': lambda: details.caste == self.caste_required if self.caste is not None else True,
@@ -87,7 +89,9 @@ class Scheme(models.Model):
         'marital_status': lambda: details.maritial_status == self.maritial_status if self.maritial_status is not None else True,
         'location': lambda: details.location == self.location if self.location is not None else True,
         'minority': lambda: details.minority == self.minority if self.minority is not None else True,
-        'below_poverty_line': lambda: details.below_poverty_line == self.below_poverty_line if self.below_poverty_line is not None else True, 
+        'below_poverty_line': lambda: details.below_poverty_line == self.below_poverty_line if self.below_poverty_line is not None else 
+        True, 
+        'max_income': lambda: details.income <= self.max_income if self.max_income is not None else True,
         }
         return all(check() for check in checks.values())
 

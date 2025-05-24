@@ -20,7 +20,7 @@ class Add_Scheme_Form(forms.ModelForm):
 
     class Meta:
         model = Scheme
-        fields = ['name', 'objective', 'benefits', 'agency', 'full_description', 'gender', 'min_age', 'maritial_status', 'location', 'caste', 'disability', 'minority', 'below_poverty_line', 'income' ]
+        fields = ['name', 'objective', 'benefits', 'agency', 'full_description', 'gender', 'min_age', 'max_age', 'maritial_status', 'location', 'caste', 'disability', 'minority', 'below_poverty_line', 'max_income' ]
         widgets = {
             'gender': forms.Select(attrs={'class': 'form-control'}),
             'maritial_status': forms.Select(attrs={'class': 'form-control'}),

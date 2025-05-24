@@ -1,6 +1,6 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% load static %} {% block content %}
+<title>Eligibility</title>
 <link rel="stylesheet" href="{% static 'css/eligible_schemes.css' %}" />
-{% block title%}Eligibility Results{% endblock %}
 <main class="container" role="main" aria-labelledby="eligibility-title">
   <h2 id="eligibility-title">
     You are eligible for {{ total }} scheme{{ total|pluralize }}
