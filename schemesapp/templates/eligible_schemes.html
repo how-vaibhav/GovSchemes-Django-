@@ -1,12 +1,22 @@
-<h2>You are eligible for {{ total }} scheme{{ total|pluralize }}</h2>
+{% extends "base.html" %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'css/eligible_schemes.css' %}" />
+{% block title%}Eligibility Results{% endblock %}
+<main class="container" role="main" aria-labelledby="eligibility-title">
+  <h2 id="eligibility-title">
+    You are eligible for {{ total }} scheme{{ total|pluralize }}
+  </h2>
 
-<ul>
-  {% for scheme in eligible_schemes %}
-  <li>
-    <h4>{{ scheme.name }}</h4>
-    <p>{{ scheme.description }}</p>
-  </li>
-  {% empty %}
-  <li>You are not currently eligible for any schemes.</li>
-  {% endfor %}
-</ul>
+  <ul>
+    {% for scheme in eligible_schemes %}
+    <li role="article" aria-label="Eligible scheme: {{ scheme.name }}">
+      <h4>{{ scheme.name }}</h4>
+      <p>{{ scheme.description }}</p>
+    </li>
+    {% empty %}
+    <li class="no-eligibility">
+      You are not currently eligible for any schemes.
+    </li>
+    {% endfor %}
+  </ul>
+</main>
+{% endblock %}
