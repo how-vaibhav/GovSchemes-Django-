@@ -497,3 +497,19 @@ def reject_application(request, app_id):
 
     messages.error(request, 'Application rejected and user notified.')
     return redirect('all_applications')
+
+@login_required
+@require_POST
+def mark_read(request):
+    notif_id = request.POST.get('notification_id')
+    if not notif_id:
+        return JsonResponse({'error': 'No notification id provided'}, status=400)
+
+    try:
+        notif = Notification.objects.get(id=notif_id, user=request.user)
+    except Notification.DoesNotExist:
+        return JsonResponse({'error': 'Notification not found'}, status=404)
+
+    notif.is_read = True
+    notif.save()
+    return JsonResponse({'success': True})

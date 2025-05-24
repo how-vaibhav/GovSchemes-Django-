@@ -84,3 +84,22 @@
         color: #888;
         margin-top: 50px;
     }
+    .feedback-summary {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+    }
+
+    .feedback-summary span {
+    padding: 0 8px;
+    }
+
+    .feedback-summary .replied {
+    color: green;
+    font-weight: 600;
+    }
+
+    .feedback-summary .unreplied {
+    color: red;
+    font-weight: 600;
+    }

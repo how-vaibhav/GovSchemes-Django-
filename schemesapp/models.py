@@ -143,3 +143,4 @@ class Application(models.Model):
             self._aadhaar = encrypted
         else:
             self._aadhaar = None
+

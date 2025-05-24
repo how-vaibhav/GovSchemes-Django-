@@ -26,5 +26,6 @@ urlpatterns = [
       path('applications/', views.applications_view, name='all_applications'),
       path('applications/<int:app_id>/accept/', views.accept_application, name='accept_application'),
       path('applications/<int:app_id>/reject/', views.reject_application, name='reject_application'),
+      path('notifications/mark-read/', views.mark_read, name='mark_read'),
 ]
 
