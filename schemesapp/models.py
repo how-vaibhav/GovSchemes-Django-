@@ -148,3 +148,5 @@ class Application(models.Model):
         else:
             self._aadhaar = None
 
+    def __str__(self):
+        return self._aadhaar

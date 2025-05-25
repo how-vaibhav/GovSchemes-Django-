@@ -15,6 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from bs4 import BeautifulSoup
 from django.views.decorators.http import require_POST
+from django.db.models import Q
 # Create your views here.
 
 #Home page view, that sends username of user and their notifications if they have logged in
@@ -188,13 +189,20 @@ def translate_page(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 def scheme_list(request):
+    query = request.GET.get('q', '')  # Get the query from the search bar
     schemes = Scheme.objects.all()
-    return render(request, 'scheme_list.html', {'schemes': schemes})
+
+    if query:
+        schemes = schemes.filter(
+            Q(name__icontains=query)
+        )
+
+    return render(request, 'scheme_list.html', {'schemes': schemes, 'query': query})
 
 def scheme_detail(request, pk):
     scheme = get_object_or_404(Scheme, pk=pk)
 
-    feedbacks = Feedback.objects.all().order_by('-submitted_at')  # get all feedback for this scheme
+    feedbacks = Feedback.objects.all().filter(scheme=scheme).order_by('-submitted_at')  # get all feedback for this scheme
 
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
