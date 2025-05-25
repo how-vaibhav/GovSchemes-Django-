@@ -9,6 +9,7 @@
   <ul>
     {% for scheme in eligible_schemes %}
     <li role="article" aria-label="Eligible scheme: {{ scheme.name }}">
+      <a href="{% url 'scheme_detail' scheme.pk %}" style="text-decoration: none; color: inherit;">
       <h4>{{ scheme.name }}</h4>
       <p>{{ scheme.description }}</p>
     </li>
